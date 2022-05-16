@@ -78,7 +78,7 @@ fn eval(program: Vec<Command>, memory: &mut [Cell]) -> Result<()> {
                 memory[index].value = memory[index].value.wrapping_sub(1);
             }
             Output => {
-                println!("{}", memory[index].value as char);
+                println!("{}", char::from(memory[index].value));
             }
             Input => {
                 let mut input = [0_u8; 1];
