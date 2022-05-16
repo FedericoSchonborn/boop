@@ -1,10 +1,11 @@
-# Boop
+# 👉🐈 Boop
 
 WIP
 
 ## TODO
 
 - Loops.
+- Brainf**k to Boop translator.
 
 ## Try it!
 

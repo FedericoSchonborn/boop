@@ -27,11 +27,11 @@ use Command::{
 };
 
 fn read(source: &str) -> Vec<Command> {
-    let mut cmds = Vec::new();
+    let mut program = Vec::new();
 
-    for word in source.split_whitespace() {
-        cmds.push({
-            match word {
+    for slice in source.split_whitespace() {
+        program.push({
+            match slice {
                 "👉👉" => MoveRight,
                 "👉👈" => MoveLeft,
                 "👉😺" => Increment,
@@ -39,14 +39,14 @@ fn read(source: &str) -> Vec<Command> {
                 "👉😻" => Output,
                 "👉🐱" => Input,
                 "👉😸" => OpenLoop,
-                "👉😹" => CloseLoop,
+                "👉🙀" => CloseLoop,
                 "👉🐈" => Boop,
                 _ => continue,
             }
         });
     }
 
-    cmds
+    program
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -101,6 +101,7 @@ fn eval(program: Vec<Command>, memory: &mut [Cell]) -> Result<()> {
 
 #[derive(Debug, Parser)]
 struct Options {
+    /// Memory cell size.
     #[clap(short, long)]
     memory_size: Option<usize>,
 
