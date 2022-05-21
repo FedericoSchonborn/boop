@@ -1,7 +1,10 @@
 use std::{
     char,
-    io::{BufRead, Write},
+    io::{self, BufRead, Write},
+    num::ParseIntError,
 };
+
+use thiserror::Error;
 
 use crate::command::Command;
 
@@ -42,8 +45,8 @@ where
         }
     }
 
-    #[allow(clippy::missing_panics_doc)]
-    pub fn execute(&mut self, program: &'a [Command]) {
+    #[allow(clippy::missing_errors_doc)]
+    pub fn execute(&mut self, program: &'a [Command]) -> Result<(), Error> {
         let mut iter = program.iter().peekable();
         while let Some(command) = iter.next() {
             match command {
@@ -53,8 +56,9 @@ where
                 Command::DecrementCell => self.memory[self.pointer] -= 1,
                 Command::InputChar => {
                     let mut buffer = String::new();
-                    self.input.read_line(&mut buffer).unwrap();
-                    self.memory[self.pointer] = buffer.chars().next().unwrap() as u32;
+                    self.input.read_line(&mut buffer)?;
+                    self.memory[self.pointer] =
+                        buffer.trim_end().chars().next().ok_or(Error::EmptyInput)? as u32;
                 }
                 Command::OutputChar => {
                     write!(
@@ -62,12 +66,11 @@ where
                         "{}",
                         char::from_u32(self.memory[self.pointer])
                             .unwrap_or(char::REPLACEMENT_CHARACTER)
-                    )
-                    .unwrap();
+                    )?;
                 }
                 Command::NonZeroLoop(block) => {
                     while self.memory[self.pointer] != 0 {
-                        self.execute(block);
+                        self.execute(block)?;
                     }
                 }
                 Command::DumpPast => writeln!(
@@ -76,21 +79,20 @@ where
                     pointer = self.pointer,
                     memory = self.memory,
                     last = self.last,
-                )
-                .unwrap(),
+                )?,
                 Command::ShiftPointerLeft => self.pointer <<= 1,
                 Command::ShiftPointerRight => self.pointer >>= 1,
                 Command::ShiftCellLeft => self.memory[self.pointer] <<= 1,
                 Command::ShiftCellRight => self.memory[self.pointer] >>= 1,
                 Command::InputInt => {
                     let mut buffer = String::new();
-                    self.input.read_line(&mut buffer).unwrap();
-                    self.memory[self.pointer] = buffer.trim_end().parse().unwrap();
+                    self.input.read_line(&mut buffer)?;
+                    self.memory[self.pointer] = buffer.trim_end().parse()?;
                 }
-                Command::OutputInt => write!(self.output, "{}", self.memory[self.pointer]).unwrap(),
+                Command::OutputInt => write!(self.output, "{}", self.memory[self.pointer])?,
                 Command::ZeroLoop(block) => {
                     while self.memory[self.pointer] == 0 {
-                        self.execute(block);
+                        self.execute(block)?;
                     }
                 }
                 Command::DumpFuture => writeln!(
@@ -99,12 +101,23 @@ where
                     pointer = self.pointer,
                     memory = self.memory,
                     next = iter.peek(),
-                )
-                .unwrap(),
-                Command::Boop => writeln!(self.debug, "🫵").unwrap(),
+                )?,
+                Command::Boop => writeln!(self.debug, "🫵")?,
             }
 
             self.last = Some(command);
         }
+
+        Ok(())
     }
+}
+
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("empty input")]
+    EmptyInput,
+    #[error(transparent)]
+    Io(#[from] io::Error),
+    #[error(transparent)]
+    ParseInt(#[from] ParseIntError),
 }

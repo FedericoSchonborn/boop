@@ -1,5 +1,7 @@
 use std::{iter::Peekable, slice::Iter};
 
+use thiserror::Error;
+
 use crate::{command::Command, token::Token};
 
 #[derive(Debug, Clone)]
@@ -14,13 +16,9 @@ impl<'a> Parser<'a> {
             tokens: tokens.iter().peekable(),
         }
     }
-}
 
-impl<'a> Iterator for Parser<'a> {
-    type Item = Command;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        Some(match self.tokens.next()? {
+    fn parse(&mut self, token: Token) -> Result<Command, Error> {
+        Ok(match token {
             Token::Left => Command::MovePointerLeft,
             Token::Right => Command::MovePointerRight,
             Token::Plus => Command::IncrementCell,
@@ -49,11 +47,11 @@ impl<'a> Iterator for Parser<'a> {
                     tokens.push(*token);
                 }
 
-                Command::NonZeroLoop(Parser::new(&tokens).collect())
+                Command::NonZeroLoop(Parser::new(&tokens).collect::<Result<Vec<_>, _>>()?)
             }
-            Token::Break => panic!("unmatched break"),
+            Token::Break => return Err(Error::UnmatchedBreak),
             Token::Dump => Command::DumpPast,
-            Token::Boop => match self.tokens.next().expect("unmatched loop") {
+            Token::Boop => match self.tokens.next().ok_or(Error::UnmatchedBoop)? {
                 Token::Left => Command::ShiftPointerLeft,
                 Token::Right => Command::ShiftPointerRight,
                 Token::Plus => Command::ShiftCellLeft,
@@ -82,12 +80,29 @@ impl<'a> Iterator for Parser<'a> {
                         tokens.push(*token);
                     }
 
-                    Command::ZeroLoop(Parser::new(&tokens).collect())
+                    Command::ZeroLoop(Parser::new(&tokens).collect::<Result<Vec<_>, _>>()?)
                 }
-                Token::Break => panic!("unmatched break"),
+                Token::Break => return Err(Error::UnmatchedBreak),
                 Token::Dump => Command::DumpFuture,
                 Token::Boop => Command::Boop,
             },
         })
     }
+}
+
+impl<'a> Iterator for Parser<'a> {
+    type Item = Result<Command, Error>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let token = self.tokens.next()?;
+        Some(self.parse(*token))
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("unmatched break")]
+    UnmatchedBreak,
+    #[error("unmatched boop")]
+    UnmatchedBoop,
 }
