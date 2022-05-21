@@ -1,9 +1,9 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Token {
-    MoveLeft,
-    MoveRight,
-    Increment,
-    Decrement,
+    Left,
+    Right,
+    Plus,
+    Minus,
     Input,
     Output,
     Loop,

@@ -10,11 +10,11 @@ Boop is a variant of Brainfuck featuring cats.
 |    😺    | **Move** pointer to the right                                                         | **Bit shift** the pointer to the right                                                           |
 |    😸    | **Increment** the memory cell at the pointer                                          | **Bit shift** the memory cell at the pointer to the left                                         |
 |    😿    | **Decrement** the memory cell at the pointer                                          | **Bit shift** the memory cell at the pointer to the right                                        |
-|    😼    | Input a **character** and store it in the cell at the pointer                         | Input **an integer** and store it in the cell at the pointer                                     |
-|    😽    | Output the **character** signified by the cell at the pointer                         | Output the **integer signified** by the cell at the pointer                                      |
+|    😼    | Input a **character** and store it in the cell at the pointer                         | Input an **integer** and store it in the cell at the pointer                                     |
+|    😽    | Output the **character** signified by the cell at the pointer                         | Output the **integer** signified by the cell at the pointer                                      |
 |    😻    | Jump past the matching 🙀 if the cell at the pointer is **zero**                       | Jump past the matching 🙀 if the cell at the pointer is **non-zero**                              |
 |    💩    | Dump the pointer, the memory cell array and **the last executed command** to `stderr` | Dump the pointer, the memory cell array and **the next command to execute (if any)** to `stderr` |
-|    👉    | The **next command** gets booped (see "Description (Booped)" column)                  | The **user** gets booped                                                                         |
+|    👉    | The **next command** gets booped                                                      | The **user** gets booped                                                                         |
 
 ## Try it
 

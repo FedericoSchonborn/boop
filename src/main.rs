@@ -16,6 +16,8 @@ fn main() {
     let mut input = stdin.lock();
     let stdout = io::stdout();
     let mut output = stdout.lock();
-    let mut machine = Machine::new(&mut memory, &mut input, &mut output);
+    let stderr = io::stderr();
+    let mut debug = stderr.lock();
+    let mut machine = Machine::new(&mut memory, &mut input, &mut output, &mut debug);
     machine.execute(&program);
 }

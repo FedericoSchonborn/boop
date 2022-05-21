@@ -21,10 +21,10 @@ impl<'a> Iterator for Scanner<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         Some(match self.chars.next()? {
-            '😾' => Token::MoveLeft,
-            '😺' => Token::MoveRight,
-            '😸' => Token::Increment,
-            '😿' => Token::Decrement,
+            '😾' => Token::Left,
+            '😺' => Token::Right,
+            '😸' => Token::Plus,
+            '😿' => Token::Minus,
             '😼' => Token::Input,
             '😽' => Token::Output,
             '😻' => Token::Loop,

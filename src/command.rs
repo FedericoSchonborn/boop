@@ -1,12 +1,22 @@
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Command {
-    MoveLeft(usize),
-    MoveRight(usize),
-    Increment(u8),
-    Decrement(u8),
-    Input,
-    Output,
-    Loop(Vec<Command>),
-    Dump,
-    Boop(Option<Box<Command>>),
+    // Regular commands.
+    MovePointerLeft(usize),
+    MovePointerRight(usize),
+    IncrementCell(u8),
+    DecrementCell(u8),
+    InputChar,
+    OutputChar,
+    NonZeroLoop(Vec<Command>),
+    DumpPast,
+    // Booped commands.
+    ShiftPointerLeft(usize),
+    ShiftPointerRight(usize),
+    ShiftCellLeft(usize),
+    ShiftCellRight(usize),
+    InputInt,
+    OutputInt,
+    ZeroLoop(Vec<Command>),
+    DumpFuture,
+    Boop,
 }
