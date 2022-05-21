@@ -1,4 +1,7 @@
-use std::io::{BufRead, Write};
+use std::{
+    char,
+    io::{BufRead, Write},
+};
 
 use crate::command::Command;
 
@@ -9,7 +12,7 @@ where
     W: Write,
     D: Write,
 {
-    memory: &'a mut [u8],
+    memory: &'a mut [u32],
     pointer: usize,
     input: &'a mut R,
     output: &'a mut W,
@@ -24,7 +27,7 @@ where
     D: Write,
 {
     pub fn new(
-        memory: &'a mut [u8],
+        memory: &'a mut [u32],
         input: &'a mut R,
         output: &'a mut W,
         debug: &'a mut D,
@@ -49,12 +52,18 @@ where
                 Command::IncrementCell => self.memory[self.pointer] += 1,
                 Command::DecrementCell => self.memory[self.pointer] -= 1,
                 Command::InputChar => {
-                    let mut buffer = [0; 1];
-                    self.input.read_exact(&mut buffer).unwrap();
-                    self.memory[self.pointer] = buffer[0];
+                    let mut buffer = String::new();
+                    self.input.read_line(&mut buffer).unwrap();
+                    self.memory[self.pointer] = buffer.chars().next().unwrap() as u32;
                 }
                 Command::OutputChar => {
-                    write!(self.output, "{}", char::from(self.memory[self.pointer])).unwrap();
+                    write!(
+                        self.output,
+                        "{}",
+                        char::from_u32(self.memory[self.pointer])
+                            .unwrap_or(char::REPLACEMENT_CHARACTER)
+                    )
+                    .unwrap();
                 }
                 Command::NonZeroLoop(block) => {
                     while self.memory[self.pointer] != 0 {
