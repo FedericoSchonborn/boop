@@ -1,6 +1,6 @@
 #![warn(clippy::pedantic)]
 
-use std::{env, fs, io};
+use std::{env, fs, io, time::Instant};
 
 use anyhow::{Context, Result};
 use boop::{Machine, Parser, Scanner};
@@ -12,7 +12,7 @@ fn main() -> Result<()> {
     let tokens = scanner.collect::<Vec<_>>();
     let parser = Parser::new(&tokens);
     let program = parser.collect::<Result<Vec<_>, _>>()?;
-    let mut memory = [0; 7];
+    let mut memory = [0; 30_000];
     let stdin = io::stdin();
     let mut input = stdin.lock();
     let stdout = io::stdout();
@@ -20,7 +20,9 @@ fn main() -> Result<()> {
     let stderr = io::stderr();
     let mut debug = stderr.lock();
     let mut machine = Machine::new(&mut memory, &mut input, &mut output, &mut debug);
+    let now = Instant::now();
     machine.execute(&program)?;
+    println!("{}s", now.elapsed().as_secs_f64());
 
     Ok(())
 }
