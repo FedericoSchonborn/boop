@@ -19,45 +19,12 @@ impl<'a> Parser<'a> {
 impl<'a> Iterator for Parser<'a> {
     type Item = Command;
 
-    #[allow(clippy::too_many_lines)] // Shhhh.
     fn next(&mut self) -> Option<Self::Item> {
         Some(match self.tokens.next()? {
-            Token::Left => {
-                let mut count = 1;
-                while let Some(Token::Left) = self.tokens.peek() {
-                    count += 1;
-                    self.tokens.next();
-                }
-
-                Command::MovePointerLeft(count)
-            }
-            Token::Right => {
-                let mut count = 1;
-                while let Some(Token::Right) = self.tokens.peek() {
-                    count += 1;
-                    self.tokens.next();
-                }
-
-                Command::MovePointerRight(count)
-            }
-            Token::Plus => {
-                let mut count = 1;
-                while let Some(Token::Plus) = self.tokens.peek() {
-                    count += 1;
-                    self.tokens.next();
-                }
-
-                Command::IncrementCell(count)
-            }
-            Token::Minus => {
-                let mut count = 1;
-                while let Some(Token::Minus) = self.tokens.peek() {
-                    count += 1;
-                    self.tokens.next();
-                }
-
-                Command::DecrementCell(count)
-            }
+            Token::Left => Command::MovePointerLeft,
+            Token::Right => Command::MovePointerRight,
+            Token::Plus => Command::IncrementCell,
+            Token::Minus => Command::DecrementCell,
             Token::Input => Command::InputChar,
             Token::Output => Command::OutputChar,
             Token::Loop => {
@@ -87,42 +54,10 @@ impl<'a> Iterator for Parser<'a> {
             Token::Break => panic!("unmatched break"),
             Token::Dump => Command::DumpPast,
             Token::Boop => match self.tokens.next().expect("unmatched loop") {
-                Token::Left => {
-                    let mut count = 1;
-                    while let Some(Token::Left) = self.tokens.peek() {
-                        count += 1;
-                        self.tokens.next();
-                    }
-
-                    Command::ShiftPointerLeft(count)
-                }
-                Token::Right => {
-                    let mut count = 1;
-                    while let Some(Token::Right) = self.tokens.peek() {
-                        count += 1;
-                        self.tokens.next();
-                    }
-
-                    Command::ShiftPointerRight(count)
-                }
-                Token::Plus => {
-                    let mut count = 1;
-                    while let Some(Token::Plus) = self.tokens.peek() {
-                        count += 1;
-                        self.tokens.next();
-                    }
-
-                    Command::ShiftCellLeft(count)
-                }
-                Token::Minus => {
-                    let mut count = 1;
-                    while let Some(Token::Minus) = self.tokens.peek() {
-                        count += 1;
-                        self.tokens.next();
-                    }
-
-                    Command::ShiftCellRight(count)
-                }
+                Token::Left => Command::ShiftPointerLeft,
+                Token::Right => Command::ShiftPointerRight,
+                Token::Plus => Command::ShiftCellLeft,
+                Token::Minus => Command::ShiftCellRight,
                 Token::Input => Command::InputInt,
                 Token::Output => Command::OutputInt,
                 Token::Loop => {

@@ -44,10 +44,10 @@ where
         let mut iter = program.iter().peekable();
         while let Some(command) = iter.next() {
             match command {
-                Command::MovePointerLeft(n) => self.pointer -= n,
-                Command::MovePointerRight(n) => self.pointer += n,
-                Command::IncrementCell(n) => self.memory[self.pointer] += *n,
-                Command::DecrementCell(n) => self.memory[self.pointer] -= *n,
+                Command::MovePointerLeft => self.pointer -= 1,
+                Command::MovePointerRight => self.pointer += 1,
+                Command::IncrementCell => self.memory[self.pointer] += 1,
+                Command::DecrementCell => self.memory[self.pointer] -= 1,
                 Command::InputChar => {
                     let mut buffer = [0; 1];
                     self.input.read_exact(&mut buffer).unwrap();
@@ -69,10 +69,10 @@ where
                     last = self.last,
                 )
                 .unwrap(),
-                Command::ShiftPointerLeft(n) => self.pointer <<= n,
-                Command::ShiftPointerRight(n) => self.pointer >>= n,
-                Command::ShiftCellLeft(n) => self.memory[self.pointer] <<= n,
-                Command::ShiftCellRight(n) => self.memory[self.pointer] >>= n,
+                Command::ShiftPointerLeft => self.pointer <<= 1,
+                Command::ShiftPointerRight => self.pointer >>= 1,
+                Command::ShiftCellLeft => self.memory[self.pointer] <<= 1,
+                Command::ShiftCellRight => self.memory[self.pointer] >>= 1,
                 Command::InputInt => {
                     let mut buffer = String::new();
                     self.input.read_line(&mut buffer).unwrap();
