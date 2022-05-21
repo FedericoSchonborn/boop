@@ -12,11 +12,10 @@ fn main() {
     let parser = Parser::new(&tokens);
     let program = parser.collect::<Vec<_>>();
     let mut memory = [0; 7];
-    let mut pointer = 0;
     let stdin = io::stdin();
     let mut input = stdin.lock();
     let stdout = io::stdout();
     let mut output = stdout.lock();
-    let machine = Machine::new(&program, &mut memory, &mut pointer, &mut input, &mut output);
-    machine.for_each(drop);
+    let mut machine = Machine::new(&mut memory, &mut input, &mut output);
+    machine.execute(&program);
 }
